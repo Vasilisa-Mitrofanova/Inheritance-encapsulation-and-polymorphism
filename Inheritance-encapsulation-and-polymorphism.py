@@ -17,14 +17,7 @@ class Student:
             print('Ошибка. Проверьте введенные данные.')
 
     def __str__(self):
-        mean = 0
-        count = 0
-        for grade_s in self.grades.values():
-            for grade in grade_s:
-                mean += grade
-            count += len(grade_s)
-        mean //= count
-        print(f"Имя: {self.name} \nФамилия: {self.surname} \nСредняя оценка за домашние задания: {mean}")
+        print(f"Имя: {self.name} \nФамилия: {self.surname} \nСредняя оценка за домашние задания: {average_score_calculation(self)}")
         print("Курсы в процессе изучения: ", end="")
         for course in self.courses_in_progress:
             print(f"{course},", end=" ")
@@ -34,7 +27,12 @@ class Student:
         res = "\n"
         return res
 
-
+    def __lt__(self, other):
+        if not isinstance(other, Student):
+            print("Ошибка. Попытка сравнить студента с не-студентом.")
+            return
+        else:
+            return average_score_calculation(self) < average_score_calculation(other)
 
 
 class Mentor:
@@ -55,9 +53,7 @@ class Mentor:
 
 class Lecturer(Mentor):
     def __init__(self, name, surname):
-        self.name = name
-        self.surname = surname
-        self.courses_attached = []
+        super().__init__(name, surname)
         self.grades = {}
 
     def __str__(self):
@@ -71,16 +67,32 @@ class Lecturer(Mentor):
         print(f"Имя: {self.name} \nФамилия: {self.surname} \nСредняя оценка за лекции: {mean}")
         return ""
 
+    def __lt__(self, other):
+        if not isinstance(other, Lecturer):
+            print("Ошибка. Попытка сравнить лектора с не-лектором.")
+            return
+        else:
+            return average_score_calculation(self) < average_score_calculation(other)
+
 
 class Reviewer(Mentor):
     def __init__(self, name, surname):
-        self.name = name
-        self.surname = surname
-        self.courses_attached = []
+        super().__init__(name, surname)
 
     def __str__(self):
         print(f"Имя: {self.name} \nФамилия: {self.surname}")
         return ""
+
+
+def average_score_calculation(student):
+    mean = 0
+    count = 0
+    for grade_s in student.grades.values():
+        for grade in grade_s:
+            mean += grade
+        count += len(grade_s)
+    mean //= count
+    return mean
 
 
 def mean_grade_for_students(students, name_of_course):
@@ -189,3 +201,13 @@ mean_grade_for_students(students, "Python")
 
 mean_grade_for_lecturer(lecturers, "Git")
 mean_grade_for_lecturer(lecturers, "Python")
+
+# проверка, как работает метод сравнения студентов и метод сравнения лекторов
+
+print()
+
+print(student1 < student2)
+print(student3 > student1)
+
+print(lecturer1 < lecturer2)
+print(lecturer3 > lecturer1)
